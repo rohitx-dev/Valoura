@@ -53,20 +53,38 @@ verified from this file list.
 
 ## 4. Reusable work
 
-- Existing frontend scaffold and starter assets.
-- Root package configuration and lockfile, subject to inspection.
-- MVP guide and implementation workflow.
-- Task issue and pull request templates.
+The following work exists in the current repository and can be retained:
+
+- The Next.js App Router and TypeScript scaffold under `apps/web`.
+- The existing root package configuration and dependency lockfile.
+- The repository README and Git ignore rules.
+- The Valoura MVP planning guide and phased implementation workflow under `docs`.
+- The GitHub task issue template.
+- The GitHub pull request template.
+- The existing Git repository and commit history.
+
+Reusable files still require inspection and verification during their
+corresponding backlog issues. Their presence does not prove that every
+requirement is implemented or working.
+
 
 ## 5. Known gaps
 
-- Verify frontend execution and production build.
-- Inspect root scripts and npm workspace configuration.
-- Align remaining MongoDB/Mongoose documentation with PostgreSQL.
-- Implement the API and worker scaffold under V-02.
-- Establish contracts and CI under V-03.
-- Implement PostgreSQL integration, migrations and seeds under V-04.
-- Verify GitHub planning and protection settings separately.
+- Verify the existing frontend locally and confirm that its development
+  server and production build work.
+- Inspect and align the root npm workspace configuration under V-02.
+- Create the Express API and worker scaffolds under V-02.
+- Add environment validation and example environment files under V-02.
+- Establish shared DTOs, API errors, OpenAPI and CI under V-03.
+- Replace the remaining MongoDB and Mongoose decisions in the planning
+  documents with the selected PostgreSQL architecture.
+- Select and document the PostgreSQL access and migration tools.
+- Implement PostgreSQL configuration, migrations, constraints, indexes,
+  seeds and an isolated test database under V-04.
+- Implement authentication under V-06 and V-07.
+- Verify the GitHub milestones, Project board, issues, labels and branch
+  protections separately because they cannot be confirmed from the
+  repository file list.
 
 ## 6. Next action
 
