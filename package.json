@@ -1,7 +1,7 @@
 {
   "name": "valoura",
   "version": "1.0.0",
-  "workspaces":[
+  "workspaces": [
     "apps/*",
     "packages/*"
   ],
@@ -12,7 +12,11 @@
     "doc": "docs"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "concurrently --names web,api,worker \"npm run dev --workspace=apps/web\" \"npm run dev --workspace=apps/api\" \"npm run dev --workspace=apps/worker\" ",
+    "build": "npm run build --workspaces --if-present",
+    "lint": "npm run lint --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspaces --if-present"
   },
   "repository": {
     "type": "git",
@@ -25,5 +29,8 @@
   "bugs": {
     "url": "https://github.com/rohitx-dev/Valoura/issues"
   },
-  "homepage": "https://github.com/rohitx-dev/Valoura#readme"
+  "homepage": "https://github.com/rohitx-dev/Valoura#readme",
+  "devDependencies": {
+    "concurrently": "^10.0.5"
+  }
 }
