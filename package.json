@@ -14,9 +14,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "concurrently --names web,api,worker \"npm run dev --workspace=apps/web\" \"npm run dev --workspace=apps/api\" \"npm run dev --workspace=apps/worker\" ",
-    "build": "npm run build --workspaces --if-present",
-    "lint": "npm run lint --workspaces --if-present",
-    "typecheck": "npm run typecheck --workspaces --if-present"
+    "build": "npm run build --workspaces",
+    "lint": "npm run lint --workspaces",
+    "typecheck": "npm run typecheck --workspaces"
   },
   "repository": {
     "type": "git",
@@ -31,6 +31,10 @@
   },
   "homepage": "https://github.com/rohitx-dev/Valoura#readme",
   "devDependencies": {
-    "concurrently": "^10.0.5"
+    "@eslint/js": "^9.39.5",
+    "concurrently": "^10.0.5",
+    "eslint": "^9.39.5",
+    "globals": "^17.12.0",
+    "typescript-eslint": "^8.70.0"
   }
 }
