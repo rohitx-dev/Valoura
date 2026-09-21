@@ -129,3 +129,5 @@ Expected response:
 ## Documentation
 
 See the `docs/` directory for the MVP plan, architecture decisions, backlog and implementation workflow.
+
+- [Development checks and API contract maintenance](docs/checks-and-api-contracts.md)

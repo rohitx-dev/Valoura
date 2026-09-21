@@ -1,0 +1,223 @@
+openapi: 3.0.3
+info:
+  title: Valoura API
+  version: 0.1.0
+  description: |
+    V-03 starter documenting the implemented health endpoint and shared errors.
+    Health is mounted at /health, outside the future /api/v1 feature prefix.
+    Its success response intentionally has no data envelope.
+    Shared error responses are reusable components, not additional endpoints.
+    Unknown routes return NotFound. Validation errors occur only on routes
+    using request validation; /health has no input schema.
+    Authentication and feature endpoints will be documented when implemented.
+servers:
+  - url: http://localhost:{port}
+    description: Local API; set port to the PORT configured in apps/api/.env.
+    variables:
+      port:
+        default: '5000'
+        description: Example port; override with your configured API port.
+tags:
+  - name: Health
+    description: Process liveness.
+paths:
+  /health:
+    get:
+      tags: [Health]
+      operationId: getHealth
+      summary: Check API liveness
+      description: |
+        Returns the existing static health response. Does not check the database,
+        worker, payment provider or other dependencies. No request body or
+        authentication is required. Global JSON-parser errors can occur before
+        the handler if a client sends an unexpected JSON body.
+      security: []
+      responses:
+        '200':
+          description: API process is responding.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+              example:
+                status: ok
+                service: valoura-api
+        '400':
+          $ref: '#/components/responses/InvalidJson'
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
+        '415':
+          $ref: '#/components/responses/UnsupportedEncoding'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+components:
+  headers:
+    RequestId:
+      description: Server-generated request ID; matches error.requestId for errors.
+      schema:
+        $ref: '#/components/schemas/RequestId'
+  schemas:
+    RequestId:
+      type: string
+      format: uuid
+      example: 9e888fb6-3977-411f-956f-e771f77937e2
+    HealthResponse:
+      type: object
+      additionalProperties: false
+      required: [status, service]
+      properties:
+        status:
+          type: string
+          enum: [ok]
+        service:
+          type: string
+          enum: [valoura-api]
+    ErrorFields:
+      type: object
+      description: |
+        Field paths mapped to message arrays. Paths include body, query, params
+        or headers and dot-separated nested keys or array indexes. Object-level
+        issues use the location itself. Empty for errors without field details.
+      additionalProperties:
+        type: array
+        items:
+          type: string
+      example:
+        body.email: ['Invalid value.']
+        body: ['Unrecognized fields.']
+    ApiError:
+      type: object
+      additionalProperties: false
+      required: [code, message, fields, requestId]
+      properties:
+        code:
+          type: string
+          description: Stable application error code; extensible for future features.
+          example: VALIDATION_ERROR
+        message:
+          type: string
+          description: Safe public message; excludes stack traces and secret values.
+          example: Please check the submitted fields.
+        fields:
+          $ref: '#/components/schemas/ErrorFields'
+        requestId:
+          $ref: '#/components/schemas/RequestId'
+    ErrorResponse:
+      type: object
+      additionalProperties: false
+      required: [error]
+      properties:
+        error:
+          $ref: '#/components/schemas/ApiError'
+  responses:
+    InvalidJson:
+      description: HTTP 400. The request body contains invalid JSON.
+      headers:
+        X-Request-Id:
+          $ref: '#/components/headers/RequestId'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              code: INVALID_JSON
+              message: The request body contains invalid JSON.
+              fields: {}
+              requestId: 9e888fb6-3977-411f-956f-e771f77937e2
+    NotFound:
+      description: HTTP 404. The requested resource was not found.
+      headers:
+        X-Request-Id:
+          $ref: '#/components/headers/RequestId'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              code: NOT_FOUND
+              message: The requested resource was not found.
+              fields: {}
+              requestId: 9e888fb6-3977-411f-956f-e771f77937e2
+    Conflict:
+      description: HTTP 409. This vendor is unavailable for the selected date. Reusable domain-conflict
+        template; this example does not imply a booking route exists.
+      headers:
+        X-Request-Id:
+          $ref: '#/components/headers/RequestId'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              code: DATE_UNAVAILABLE
+              message: This vendor is unavailable for the selected date.
+              fields: {}
+              requestId: 9e888fb6-3977-411f-956f-e771f77937e2
+    PayloadTooLarge:
+      description: HTTP 413. The request body is too large.
+      headers:
+        X-Request-Id:
+          $ref: '#/components/headers/RequestId'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              code: PAYLOAD_TOO_LARGE
+              message: The request body is too large.
+              fields: {}
+              requestId: 9e888fb6-3977-411f-956f-e771f77937e2
+    UnsupportedEncoding:
+      description: HTTP 415. The request encoding is not supported.
+      headers:
+        X-Request-Id:
+          $ref: '#/components/headers/RequestId'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              code: UNSUPPORTED_ENCODING
+              message: The request encoding is not supported.
+              fields: {}
+              requestId: 9e888fb6-3977-411f-956f-e771f77937e2
+    ValidationError:
+      description: HTTP 422. Please check the submitted fields.
+      headers:
+        X-Request-Id:
+          $ref: '#/components/headers/RequestId'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              code: VALIDATION_ERROR
+              message: Please check the submitted fields.
+              fields:
+                body.email:
+                - Invalid value.
+              requestId: 9e888fb6-3977-411f-956f-e771f77937e2
+    InternalServerError:
+      description: HTTP 500. Something went wrong. Please try again later.
+      headers:
+        X-Request-Id:
+          $ref: '#/components/headers/RequestId'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              code: INTERNAL_SERVER_ERROR
+              message: Something went wrong. Please try again later.
+              fields: {}
+              requestId: 9e888fb6-3977-411f-956f-e771f77937e2
